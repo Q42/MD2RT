@@ -61,6 +61,15 @@ public class MD2RTTests
   }
 
   [Fact]
+  public void Link_Test()
+  {
+    AssertEqual(
+      "\"[Link][1]\\n\\n\\n  [1]: http://www.q42.nl\"",
+      "\"{\\\"type\\\":\\\"doc\\\",\\\"content\\\":[{\\\"type\\\":\\\"paragraph\\\",\\\"content\\\":[{\\\"type\\\":\\\"text\\\",\\\"marks\\\":[{\\\"type\\\":\\\"link\\\",\\\"attrs\\\":{\\\"href\\\":\\\"http://www.q42.nl\\\",\\\"target\\\":null,\\\"class\\\":null}}],\\\"text\\\":\\\"Link\\\"}]}]}\""
+    );
+  }
+
+  [Fact]
   public void MixedText_Test()
   {
     AssertEqual(
@@ -137,7 +146,10 @@ public class MD2RTTests
     }
     else if (markdownToken is JValue markdownValue && richTextToken is JValue richTextValue)
     {
-      if (markdownValue.Value?.Equals(richTextValue.Value) != true)
+      var markdownActualValue = markdownValue.Value;
+      var richTextActualValue = richTextValue.Value;
+
+      if (markdownActualValue != richTextActualValue && markdownActualValue?.Equals(richTextActualValue) != true)
       {
         throw new Exception($"{markdownToken} != {richTextToken}");
       }
