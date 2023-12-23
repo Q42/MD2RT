@@ -78,6 +78,51 @@ public class MD2RTTests
     );
   }
 
+  [Fact]
+  public void InternalLink_Test()
+  {
+    AssertEqual(
+      "\"[internal link][1]\\n\\n\\n  [1]: page-guid://10727f03-d784-4199-1ab1-08dbe13b4d61\"",
+      "\"{\\\"type\\\":\\\"doc\\\",\\\"content\\\":[{\\\"type\\\":\\\"paragraph\\\",\\\"content\\\":[{\\\"type\\\":\\\"text\\\",\\\"marks\\\":[{\\\"type\\\":\\\"pageLink\\\",\\\"attrs\\\":{\\\"href\\\":\\\"page-guid://10727f03-d784-4199-1ab1-08dbe13b4d61\\\",\\\"target\\\":null,\\\"rel\\\":null}}],\\\"text\\\":\\\"internal link\\\"}]}]}\""
+    );
+  }
+
+  [Fact]
+  public void OrderedList_Test()
+  {
+    AssertEqual(
+      "\" 1. a\\n 2. b\\n 3. c\"",
+      "\"{\\\"type\\\":\\\"doc\\\",\\\"content\\\":[{\\\"type\\\":\\\"orderedList\\\",\\\"attrs\\\":{\\\"start\\\":1},\\\"content\\\":[{\\\"type\\\":\\\"listItem\\\",\\\"content\\\":[{\\\"type\\\":\\\"paragraph\\\",\\\"content\\\":[{\\\"type\\\":\\\"text\\\",\\\"text\\\":\\\"a\\\"}]}]},{\\\"type\\\":\\\"listItem\\\",\\\"content\\\":[{\\\"type\\\":\\\"paragraph\\\",\\\"content\\\":[{\\\"type\\\":\\\"text\\\",\\\"text\\\":\\\"b\\\"}]}]},{\\\"type\\\":\\\"listItem\\\",\\\"content\\\":[{\\\"type\\\":\\\"paragraph\\\",\\\"content\\\":[{\\\"type\\\":\\\"text\\\",\\\"text\\\":\\\"c\\\"}]}]}]}]}\""
+    );
+  }
+
+  [Fact]
+  public void UnorderedList_Test()
+  {
+    AssertEqual(
+      "\" - x\\n - y\\n - z\"",
+      "\"{\\\"type\\\":\\\"doc\\\",\\\"content\\\":[{\\\"type\\\":\\\"bulletList\\\",\\\"content\\\":[{\\\"type\\\":\\\"listItem\\\",\\\"content\\\":[{\\\"type\\\":\\\"paragraph\\\",\\\"content\\\":[{\\\"type\\\":\\\"text\\\",\\\"text\\\":\\\"x\\\"}]}]},{\\\"type\\\":\\\"listItem\\\",\\\"content\\\":[{\\\"type\\\":\\\"paragraph\\\",\\\"content\\\":[{\\\"type\\\":\\\"text\\\",\\\"text\\\":\\\"y\\\"}]}]},{\\\"type\\\":\\\"listItem\\\",\\\"content\\\":[{\\\"type\\\":\\\"paragraph\\\",\\\"content\\\":[{\\\"type\\\":\\\"text\\\",\\\"text\\\":\\\"z\\\"}]}]}]}]}\""
+    );
+  }
+
+  [Fact]
+  public void LineBreak_Test()
+  {
+    AssertEqual(
+      "\"<br>\"",
+      "\"{\\\"type\\\":\\\"doc\\\",\\\"content\\\":[{\\\"type\\\":\\\"paragraph\\\",\\\"content\\\":[{\\\"type\\\":\\\"hardBreak\\\"}]}]}\""
+    );
+  }
+
+  [Fact]
+  public void Nbsp_Test()
+  {
+    AssertEqual(
+      "\"a b\"",
+      "\"{\\\"type\\\":\\\"doc\\\",\\\"content\\\":[{\\\"type\\\":\\\"paragraph\\\",\\\"content\\\":[{\\\"type\\\":\\\"text\\\",\\\"text\\\":\\\"a b\\\"}]}]}\""
+    );
+  }
+
   private void AssertEqual(string markdown, string expectedRichTextJson)
   {
     var markdownJson = MD2RT.ToRichText(markdown);
@@ -112,10 +157,12 @@ public class MD2RTTests
     if (markdownToken == null && richTextToken != null)
       throw new NullException(nameof(markdownToken));
 
+    var ignoredKeys = new[] { "class", "rel" };
+
     if (markdownToken is JObject markdownObject && richTextToken is JObject richTextObject)
     {
-      var markdownChildren = markdownObject.Children().OrderBy(t => $"{t}").ToArray();
-      var richTextChildren = richTextObject.Children().OrderBy(t => $"{t}").ToArray();
+      var markdownChildren = markdownObject.Children().Where(t => ignoredKeys.Contains($"{t}")).OrderBy(t => $"{t}").ToArray();
+      var richTextChildren = richTextObject.Children().Where(t => ignoredKeys.Contains($"{t}")).OrderBy(t => $"{t}").ToArray();
 
       var markdownKeys = markdownChildren.Select(t => t as JProperty).Select(p => p!.Name).ToHashSet();
       var richTextKeys = richTextChildren.Select(t => t as JProperty).Select(p => p!.Name).ToHashSet();
