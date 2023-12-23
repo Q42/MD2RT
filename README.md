@@ -3,6 +3,9 @@
 A C# library that can be used to transform Mardown to [Tiptap](https://github.com/ueberdosis/tiptap)
 compatible rich-text JSON. Built upon [ProseMirror.Model](https://github.com/Holoon/ProseMirror.Model)
 
+Have a look at [the unit tests](https://github.com/bkiers/MD2RT/blob/master/MD2RT.Tests/MD2RTTests.cs) 
+to see what Markdown features are supported.
+
 ## Usage
 
 Simple case where you can convert a Markdown JSON string into rich-text JSON:
