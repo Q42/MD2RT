@@ -1,0 +1,23 @@
+name: Release to NuGet
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v1
+    - name: Build
+      run: cd MD2RT && dotnet build -c Release
+    - name: Test
+      run: cd MD2RT.Tests && dotnet test -c Release
+    - name: Pack nugets
+      run: cd MD2RT && dotnet pack -c Release --no-build --output .
+    - name: Push to NuGet
+      run: cd MD2RT && dotnet nuget push "*.nupkg" --api-key ${{secrets.nuget_api_key}} --source https://api.nuget.org/v3/index.json
