@@ -14,7 +14,7 @@
     <ItemGroup>
       <PackageReference Include="Markdig" Version="0.33.0" />
       <PackageReference Include="HtmlAgilityPack" Version="1.11.38" />
-      <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     </ItemGroup>
 
