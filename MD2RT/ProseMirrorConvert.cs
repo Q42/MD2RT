@@ -17,7 +17,8 @@ public static class ProseMirrorConvert
     return JsonConvert.SerializeObject(rootNode, new JsonSerializerSettings
     {
       ContractResolver = new CamelCasePropertyNamesContractResolver(),
-      NullValueHandling = NullValueHandling.Ignore
+      NullValueHandling = NullValueHandling.Ignore,
+      TypeNameHandling = TypeNameHandling.None
     });
   }
 
