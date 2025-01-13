@@ -30,6 +30,6 @@ public static class ProseMirrorConvert
 
   public static Node DeserializeObjectFromJson(string json)
   {
-    return JsonConvert.DeserializeObject<Node>(json);
+    return JsonConvert.DeserializeObject<Node>(json) ?? throw new ArgumentException($"Cannot deserialize JSON to Node: '{json}'");
   }
 }
