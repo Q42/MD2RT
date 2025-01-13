@@ -21,7 +21,7 @@ public class MD2RT
 
     var json = ProseMirrorConvert.SerializeToJson(obj);
 
-    return JsonConvert.SerializeObject(json);
+    return isJsonString ? JsonConvert.SerializeObject(json) : json;
   }
 
   public static void Process(object? root, string uiHintSource, string uiHintTarget, string appendTarget, bool isJsonString = true, ILogger? logger = null)
