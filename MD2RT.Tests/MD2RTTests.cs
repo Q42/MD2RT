@@ -151,11 +151,11 @@ public class MD2RTTests
     if (markdownToken == null && richTextToken == null)
       return true;
 
-    if (markdownToken != null && richTextToken == null)
-      throw new NullException(nameof(richTextToken));
+    if (markdownToken != null)
+      Assert.NotNull(richTextToken);
 
-    if (markdownToken == null && richTextToken != null)
-      throw new NullException(nameof(markdownToken));
+    if (richTextToken != null)
+      Assert.NotNull(markdownToken);
 
     var ignoredKeys = new[] { "class", "rel" };
 
