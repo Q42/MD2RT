@@ -1,0 +1,63 @@
+trigger:
+  batch: true
+  branches:
+    include:
+      - "*"
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  projectName: "Q42.MD2RT"
+  solution: "**/$(projectName).sln"
+  buildPlatform: "Any CPU"
+  buildConfiguration: "Release"
+  Version.Revision: $[counter(format('{0:yyyyMMdd}', pipeline.startTime), 0)]
+  VersionMajor: 8
+  VersionMinor: 0
+  ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
+    NuGetVersion: "$(Build.BuildNumber)"
+  ${{ if eq(variables['Build.SourceBranchName'], 'develop') }}:
+    NuGetVersion: "$(Build.BuildNumber)-beta"
+  ? ${{ if and(ne(variables['Build.SourceBranchName'], 'master'), ne(variables['Build.SourceBranchName'], 'develop')) }}
+  : NuGetVersion: "$(Build.BuildNumber)-alpha"
+name: "$(VersionMajor).$(VersionMinor).$(Date:yy)$(DayOfYear).$(Version.Revision)"
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Use .NET Core'
+  inputs:
+    packageType: 'sdk'
+    version: '8.0.x'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+    projects: '$(solution)'
+    arguments: '--configuration $(buildConfiguration) /p:Version=$(Build.BuildNumber)'
+
+- task: DotNetCoreCLI@2
+  displayName: "Run Tests"
+  inputs:
+    command: 'test'
+    projects: '$(solution)'
+    arguments: '--no-build --configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: "Package projects"
+  inputs:
+    command: 'pack'
+    packagesToPack: '**/*.csproj;!**/*Demo.csproj;!**/*Tests.csproj'
+    nobuild: true
+    includesymbols: true
+    arguments: --output $(Build.ArtifactStagingDirectory)
+    versioningScheme: 'byEnvVar'
+    versionEnvVar: 'NuGetVersion'
+    verbosityPack: 'Minimal'
+
+- task: PublishBuildArtifacts@1
+  displayName: "Publish Build Artifacts"
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'Packages'
+    publishLocation: 'Container'
