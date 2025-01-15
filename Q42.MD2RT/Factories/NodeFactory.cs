@@ -6,8 +6,8 @@ namespace Q42.MD2RT.Factories;
 
 internal static class NodeFactory
 {
-  private static readonly IEnumerable<INodeBuilder> _defaultNodeBuilders = new INodeBuilder[]
-  {
+  private static readonly IEnumerable<INodeBuilder> _defaultNodeBuilders =
+  [
     new BlockQuoteNodeBuilder(),
     new BulletListNodeBuilder(),
     new CodeBlockNodeBuilder(),
@@ -22,12 +22,12 @@ internal static class NodeFactory
     new TableCellNodeBuilder(),
     new TableHeaderNodeBuilder(),
     new TableRowNodeBuilder(),
-    new TextNodeBuilder(),
-  };
+    new TextNodeBuilder()
+  ];
 
   public static Node? Get(HtmlNode htmlNode, IEnumerable<INodeBuilder>? customNodeBuilders = null)
   {
-    customNodeBuilders ??= Enumerable.Empty<INodeBuilder>();
+    customNodeBuilders ??= [];
     var nodeBuilders = customNodeBuilders.Concat(_defaultNodeBuilders);
     var noteBuilder = nodeBuilders.FirstOrDefault(builder => builder.AppliesToHtmlNode(htmlNode));
 

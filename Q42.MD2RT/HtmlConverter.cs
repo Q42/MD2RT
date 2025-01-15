@@ -12,9 +12,9 @@ public class HtmlConverter
   private readonly List<Mark> _storedMarks = new List<Mark>();
   private readonly IEnumerable<INodeBuilder> _customNodeBuilders;
 
-  public HtmlConverter(IEnumerable<INodeBuilder> customNodeBuilders = null)
+  public HtmlConverter(IEnumerable<INodeBuilder>? customNodeBuilders = null)
   {
-    _customNodeBuilders = customNodeBuilders ?? Enumerable.Empty<INodeBuilder>();
+    _customNodeBuilders = customNodeBuilders ?? [];
   }
 
   public string Convert(Node node)
